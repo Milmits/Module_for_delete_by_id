@@ -53,14 +53,54 @@ func (s *memoryStorage) delete(id int) error {
 	return nil
 }
 
+// zanosym structuru v pamyat'
+type dumbStorage struct{}
+
+// realisuem structuru v pamyat'
+func newDumbStorage() *dumbStorage {
+	return &dumbStorage{}
+}
+
+// zanosym infu v pamyat'
+func (s *dumbStorage) insert(e employe) error {
+	fmt.Printf("insert user with id: %d complete\n", e.id)
+	return nil
+}
+
+// poluchaem infu from memory, if id in memori doesn't exist - get error
+func (s *dumbStorage) get(id int) (employe, error) {
+	e := employe{
+		id: id,
+	}
+
+	return e, nil
+}
+
+// delete employe by id from memory
+func (s *dumbStorage) delete(id int) error {
+	fmt.Printf("delete user with id: %d complete\n", id)
+	return nil
+}
+
 func main() {
 	var s storage
 
-	fmt.Println("s == nil", s == nil)
+	fmt.Println("s:", s)
 	fmt.Printf("type of s: %T\n", s)
 
 	s = newMemoryStorage()
 
-	fmt.Println("s == nil", s == nil)
+	fmt.Println("s:", s)
 	fmt.Printf("type of s: %T\n", s)
+
+	s = newDumbStorage()
+
+	fmt.Println("s:", s)
+	fmt.Printf("type of s: %T\n", s)
+
+	s = nil
+
+	fmt.Println("s:", s)
+	fmt.Printf("type of s: %T\n", s)
+
 }
