@@ -1,60 +1,66 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 )
 
-type employee struct {
+type employe struct {
+	id     int
 	name   string
-	sex    string
 	age    int
 	salary int
 }
 
-func newEmployee(name string, sex string, age int, salary int) employee {
-	return employee{
-		name:   name,
-		age:    age,
-		sex:    sex,
-		salary: salary,
+type storage interface {
+	insert(e employe) error
+	get(id int) (employe, error)
+	delete(id int) error
+}
+
+// zanosym structuru v pamyat'
+type memoryStorage struct {
+	data map[int]employe
+}
+
+// realisuem structuru v pamyat'
+func newMemoryStorage() *memoryStorage {
+	return &memoryStorage{
+		data: make(map[int]employe),
 	}
 }
 
-func (e employee) getInfo() string {
-	return fmt.Sprintf("Person: %s\nAge: %d\nSalary: %d\n", e.name, e.age, e.salary)
+// zanosym infu v pamyat'
+func (s *memoryStorage) insert(e employe) error {
+	s.data[e.id] = e
+
+	return nil
+}
+
+// poluchaem infu from memory, if id in memori doesn't exist - get error
+func (s *memoryStorage) get(id int) (employe, error) {
+	e, exists := s.data[id]
+	if !exists {
+		return employe{}, errors.New("employe doesn't exist")
+	}
+
+	return e, nil
+}
+
+// delete employe by id from memory
+func (s *memoryStorage) delete(id int) error {
+	delete(s.data, id)
+	return nil
 }
 
 func main() {
-	employees := map[string]employee{
-		"1": newEmployee("Milan", "M", 35, 300000),
-		"2": newEmployee("Nalim", "W", 12, 102040),
-		"3": newEmployee("Yan", "M", 24, 20500),
-	}
+	var s storage
 
-	// Печать информации о всех сотрудниках
-	for id, emp := range employees {
-		fmt.Printf("ID: %s\n%s\n", id, emp.getInfo())
-	}
+	fmt.Println("s == nil", s == nil)
+	fmt.Printf("type of s: %T\n", s)
 
-	// Удаление сотрудника
-	var key string
-	fmt.Print("Enter the ID of the employee to delete: ")
-	_, err := fmt.Scanf("%s\n", &key)
-	if err != nil {
-		fmt.Println("Error reading input:", err)
-		return
-	}
+	s = newMemoryStorage()
 
-	if _, exists := employees[key]; exists {
-		delete(employees, key)
-		fmt.Printf("Employee with ID %s has been deleted.\n", key)
-	} else {
-		fmt.Printf("Employee with ID %s does not exist.\n", key)
-	}
-
-	// Печать оставшихся сотрудников
-	fmt.Println("\nRemaining employees:")
-	for id, emp := range employees {
-		fmt.Printf("ID: %s\n%s\n", id, emp.getInfo())
-	}
+	fmt.Println("s == nil", s == nil)
+	fmt.Printf("type of s: %T\n", s)
 }
