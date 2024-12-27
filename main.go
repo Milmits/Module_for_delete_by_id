@@ -83,24 +83,18 @@ func (s *dumbStorage) delete(id int) error {
 }
 
 func main() {
-	var s storage
+	ms := newMemoryStorage()
+	ds := newDumbStorage()
 
-	fmt.Println("s:", s)
-	fmt.Printf("type of s: %T\n", s)
+	spawnEmploye(ms)
+	fmt.Println(ms.get(3))
 
-	s = newMemoryStorage()
+	spawnEmploye(ds)
 
-	fmt.Println("s:", s)
-	fmt.Printf("type of s: %T\n", s)
+}
 
-	s = newDumbStorage()
-
-	fmt.Println("s:", s)
-	fmt.Printf("type of s: %T\n", s)
-
-	s = nil
-
-	fmt.Println("s:", s)
-	fmt.Printf("type of s: %T\n", s)
-
+func spawnEmploye(s storage) {
+	for i := 1; i <= 10; i++ {
+		s.insert(employe{id: i})
+	}
 }
